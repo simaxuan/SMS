@@ -1,0 +1,27 @@
+# ===== Java / Maven =====
+backend/target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# ===== Node / 前端 =====
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# ===== IDE =====
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.DS_Store
+
+# ===== 日志与临时 =====
+*.log
+*.tmp
+logs/
+temp/
