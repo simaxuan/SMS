@@ -25,4 +25,19 @@ public class StudentRequest {
 
     @Size(max = 32, message = "联系电话长度不能超过32")
     private String phone;
+
+    /** 身份证号（AES 加密存储；列表不返回） */
+    @Size(max = 18, message = "身份证号长度为18位")
+    private String idCard;
+
+    /** 父方手机号 */
+    @Size(max = 20, message = "父方手机号长度不能超过20")
+    private String fatherPhone;
+
+    /** 母方手机号 */
+    @Size(max = 20, message = "母方手机号长度不能超过20")
+    private String motherPhone;
+
+    /** 归属学校（全局超管建学生时显式指定，可跨校；普通老师忽略，走 login 校） */
+    private Long schoolId;
 }

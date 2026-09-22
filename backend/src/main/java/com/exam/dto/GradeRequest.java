@@ -1,6 +1,5 @@
 package com.exam.dto;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,6 +18,9 @@ public class GradeRequest {
 
     @NotNull(message = "分数不能为空")
     @Min(value = 0, message = "分数不能小于0")
-    @Max(value = 100, message = "分数不能大于100")
     private Integer score;
+
+    /** 本次考试该课程满分（不设上限，默认取课程默认满分） */
+    @Min(value = 1, message = "满分必须大于0")
+    private Integer fullScore = 100;
 }

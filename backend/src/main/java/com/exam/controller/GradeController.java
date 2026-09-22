@@ -1,5 +1,6 @@
 package com.exam.controller;
 
+import com.exam.common.LoginUserContext;
 import com.exam.common.R;
 import com.exam.dto.GradeRequest;
 import com.exam.entity.Grade;
@@ -24,27 +25,32 @@ public class GradeController {
     public R<List<Grade>> list(@RequestParam(required = false) Long examId,
                                @RequestParam(required = false) Long courseId,
                                @RequestParam(required = false) Long studentId) {
+        LoginUserContext.requireLogin();
         return R.ok(gradeService.list(examId, courseId, studentId));
     }
 
     @PostMapping
     public R<Grade> create(@Valid @RequestBody GradeRequest req) {
+        LoginUserContext.requireLogin();
         return R.ok(gradeService.create(req));
     }
 
     @PostMapping("/batch")
     public R<Map<String, Object>> batch(@Valid @RequestBody List<GradeRequest> reqs) {
-        int count = gradeService.batchCreate(reqs);
-        return R.ok(Map.of("created", count));
+        LoginUserContext.requireLogin();
+        // 返回明细：created=成功数、skipped=跳过数、skippedDetails=逐行跳过原因（避免静默掩盖录入丢失）
+        return R.ok(gradeService.batchCreate(reqs));
     }
 
     @PutMapping("/{id}")
     public R<Grade> update(@PathVariable Long id, @Valid @RequestBody GradeRequest req) {
+        LoginUserContext.requireLogin();
         return R.ok(gradeService.update(id, req));
     }
 
     @DeleteMapping("/{id}")
     public R<Void> delete(@PathVariable Long id) {
+        LoginUserContext.requireLogin();
         gradeService.delete(id);
         return R.ok();
     }

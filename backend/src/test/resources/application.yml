@@ -1,0 +1,13 @@
+# 仅测试环境用：覆盖主 application.yml 的文件型 H2（AUTO_SERVER=TRUE 在测试 JVM 下无法初始化，
+# 导致「无法确定 Dialect」），改为隔离的内存库 + create-drop，行为与历史内存库测试一致。
+# 注意：此文件只进入 test classpath，不影响打包产物(publish 单 jar)的默认文件库配置。
+spring:
+  datasource:
+    url: jdbc:h2:mem:examtest;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
