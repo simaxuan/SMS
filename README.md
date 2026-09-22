@@ -85,6 +85,17 @@ npm run build   # 生产构建
 - `feature/grade-entry`：成绩录入与查询模块
 - `feature/grade-statistics`：成绩统计模块
 
+## 密钥与数据安全（请务必阅读）
+
+- **JWT / AES 密钥**：由 `AppKeyProvider` 管理。若未通过环境变量显式注入
+  （`APP_SECURITY_TOKEN_SECRET` / `APP_CRYPTO_KEY`），**首次启动会自动生成强随机密钥并落盘到
+  `backend/data/app-secrets.properties`**，之后复用。
+- **务必保留该密钥文件**：AES 密钥用于加密身份证号等敏感字段，**更换机器/迁移部署时须整体拷贝
+  `data/app-secrets.properties`**，否则历史加密数据将无法解密（不可逆）。
+- 生产环境仍建议通过环境变量显式注入强随机密钥，并通过 `ProductionGuard` 强制门禁
+  （非显式注入 + PostgreSQL + 关闭播种）。
+- 请勿将 `app-secrets.properties` 提交到版本库（建议加入 `.gitignore`）。
+
 ## 文档
 
 - [一期需求规格说明](docs/一期需求规格说明.md)
