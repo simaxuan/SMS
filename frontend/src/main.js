@@ -1,20 +1,13 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 
+// 第五轮优化1：ElementPlus 改为 unplugin-vue-components 按需引入
+// （组件、样式与方法均按使用自动引入），不再 app.use(ElementPlus) 全量注册，
+// 由 App.vue 外层 el-config-provider 提供中文 locale。
+// 注：此前误引入 createPinia（pinia 无任何 store 文件，属死依赖），已移除。
 const app = createApp(App)
 
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
-
-app.use(createPinia())
 app.use(router)
-app.use(ElementPlus, { locale: zhCn })
 
 app.mount('#app')

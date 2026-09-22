@@ -3,6 +3,7 @@
     <div class="toolbar">
       <el-input v-model="keyword" placeholder="搜索学号/姓名" clearable style="width: 240px" @keyup.enter="load" @clear="load" />
       <el-button type="primary" @click="load">查询</el-button>
+      <el-button @click="reset">重置</el-button>
       <el-button type="success" @click="openDialog()">新增学生</el-button>
     </div>
 
@@ -59,6 +60,15 @@
         <el-form-item label="联系电话" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入联系电话" />
         </el-form-item>
+        <el-form-item label="身份证号" prop="idCard">
+          <el-input v-model="form.idCard" placeholder="18 位身份证号（选填）" />
+        </el-form-item>
+        <el-form-item label="父手机号" prop="fatherPhone">
+          <el-input v-model="form.fatherPhone" placeholder="父亲手机号（选填）" />
+        </el-form-item>
+        <el-form-item label="母手机号" prop="motherPhone">
+          <el-input v-model="form.motherPhone" placeholder="母亲手机号（选填）" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -70,7 +80,6 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
 import { studentApi, dictApi } from '../api'
 
 const list = ref([])
@@ -83,11 +92,19 @@ const classes = ref([])
 
 const dialogVisible = ref(false)
 const formRef = ref()
-const form = reactive({ id: null, studentNo: '', name: '', gender: '', classId: null, birthDate: '', phone: '' })
+const form = reactive({ id: null, studentNo: '', name: '', gender: '', classId: null, birthDate: '', phone: '', idCard: '', fatherPhone: '', motherPhone: '' })
+
+const idCardValidate = (rule, value, callback) => {
+  if (!value) return callback()
+  // 18 位：前 17 位数字 + 末位数字或 X
+  if (!/^\d{17}[\dX]$/.test(value)) return callback(new Error('身份证号格式不正确（应为 18 位，末位为数字或 X）'))
+  callback()
+}
 
 const rules = {
   studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+  idCard: [{ validator: idCardValidate, trigger: 'blur' }]
 }
 
 async function load() {
@@ -106,22 +123,34 @@ function className(id) {
   return c ? c.name : '-'
 }
 
+/** 清空搜索关键字并回到第一页全量数据。 */
+function reset() {
+  keyword.value = ''
+  page.value = 0
+  load()
+}
+
 function openDialog(row) {
   if (row) {
-    Object.assign(form, { id: row.id, studentNo: row.studentNo, name: row.name, gender: row.gender, classId: row.classId, birthDate: row.birthDate, phone: row.phone })
+    Object.assign(form, { id: row.id, studentNo: row.studentNo, name: row.name, gender: row.gender, classId: row.classId, birthDate: row.birthDate, phone: row.phone, idCard: row.idCard || '', fatherPhone: row.fatherPhone || '', motherPhone: row.motherPhone || '' })
   } else {
-    Object.assign(form, { id: null, studentNo: '', name: '', gender: '', classId: null, birthDate: '', phone: '' })
+    Object.assign(form, { id: null, studentNo: '', name: '', gender: '', classId: null, birthDate: '', phone: '', idCard: '', fatherPhone: '', motherPhone: '' })
   }
   dialogVisible.value = true
 }
 
 async function submit() {
   await formRef.value.validate()
+  // 仅在有值时携带可选字段，避免编辑时把后端已存值清空为 null
+  const payload = { ...form }
+  for (const k of ['idCard', 'fatherPhone', 'motherPhone']) {
+    if (payload[k] === '' || payload[k] == null) delete payload[k]
+  }
   if (form.id) {
-    await studentApi.update(form.id, form)
+    await studentApi.update(form.id, payload)
     ElMessage.success('更新成功')
   } else {
-    await studentApi.create(form)
+    await studentApi.create(payload)
     ElMessage.success('新增成功')
   }
   dialogVisible.value = false
@@ -145,6 +174,7 @@ onMounted(async () => {
 .toolbar {
   margin-bottom: 16px;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 </style>
