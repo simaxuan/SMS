@@ -25,3 +25,21 @@ yarn-error.log*
 *.tmp
 logs/
 temp/
+
+# ===== 发布产物（由 publish.ps1 生成，可再生成） =====
+publish/
+
+# ===== 运行时数据与安全密钥（本地生成，禁止提交） =====
+backend/data/
+data/
+*.mv.db
+*.trace.db
+**/app-secrets.properties
+
+# ===== 项目本地记忆 / 元数据（不入库） =====
+.workbuddy/
+
+# ===== 临时诊断文件 =====
+_*.txt
+docs_fix_check.txt
+frontend/build_out.txt

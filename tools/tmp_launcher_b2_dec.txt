@@ -1,0 +1,9 @@
+RC=0
+STDOUT>
+Microsoft(R) Visual C# 编译器 版本 4.14.0-3.26364.8 (3f384626)
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+
+STDERR>
+
+EXE_EXISTS=True

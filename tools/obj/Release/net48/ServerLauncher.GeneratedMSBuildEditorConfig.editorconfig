@@ -1,0 +1,8 @@
+is_global = true
+build_property.RootNamespace = ExamScoreServer
+build_property.ProjectDir = D:\源码\成绩分析系统\tools\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.CsWinRTUseWindowsUIXamlProjections = false
+build_property.EffectiveAnalysisLevelStyle = 
+build_property.EnableCodeStyleSeverity = 

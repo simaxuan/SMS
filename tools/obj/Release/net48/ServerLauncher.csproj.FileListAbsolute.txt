@@ -1,0 +1,11 @@
+C:\Users\w_songchao\.workbuddy\binaries\node\tmp_launcher_build\ExamScoreServerLauncher.exe.config
+C:\Users\w_songchao\.workbuddy\binaries\node\tmp_launcher_build\ExamScoreServerLauncher.exe
+C:\Users\w_songchao\.workbuddy\binaries\node\tmp_launcher_build\ExamScoreServerLauncher.pdb
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.csproj.AssemblyReference.cache
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.GeneratedMSBuildEditorConfig.editorconfig
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.AssemblyInfoInputs.cache
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.AssemblyInfo.cs
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.csproj.CoreCompileInputs.cache
+D:\源码\成绩分析系统\tools\obj\Release\net48\ServerLauncher.sourcelink.json
+D:\源码\成绩分析系统\tools\obj\Release\net48\ExamScoreServerLauncher.exe
+D:\源码\成绩分析系统\tools\obj\Release\net48\ExamScoreServerLauncher.pdb
