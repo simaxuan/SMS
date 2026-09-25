@@ -112,6 +112,25 @@
         </el-table>
         <el-empty v-if="!teacherRows.length" description="暂无教师账号" />
       </el-tab-pane>
+
+      <!-- ===== 家长管理（重置家长密码） ===== -->
+      <el-tab-pane label="家长管理" name="pm">
+        <el-alert type="info" :closable="false" show-icon style="margin-bottom: 12px"
+          title="列出本校家长账号（多租户按登录校隔离）。遗失/锁定后可「重置为默认密码」= 该生身份证后 8 位（后端统一计算，操作审计留痕）。仅校级/全校管理员可执行重置。" />
+        <el-table :data="parentRows" border stripe v-loading="parentsLoading">
+          <el-table-column prop="id" label="ID" width="80" />
+          <el-table-column prop="username" label="用户名" width="160" />
+          <el-table-column prop="nickname" label="昵称" />
+          <el-table-column prop="phone" label="手机号" width="140" />
+          <el-table-column prop="schoolId" label="学校ID" width="90" />
+          <el-table-column label="操作" width="140">
+            <template #default="{ row }">
+              <el-button :disabled="!isManager" link type="warning" @click="resetPwd(row)">重置默认密码</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-empty v-if="!parentsLoading && !parentRows.length" description="暂无家长账号" />
+      </el-tab-pane>
     </el-tabs>
 
     <!-- 学校/级部通用对话框 -->
@@ -192,6 +211,11 @@ const teacherForm = reactive({
   username: '', password: '', nickname: '', phone: '', schoolId: null, scopeType: 'CLASS', classIds: []
 })
 
+// 家长管理（重置家长密码）
+const parentRows = ref([])
+const parentsLoading = ref(false)
+const isManager = ref(false)
+
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const editing = ref('')
@@ -221,6 +245,7 @@ function onTabChange() {
   if (activeTab.value === 'level') loadLevels()
   if (activeTab.value === 'tc') loadTc()
   if (activeTab.value === 'tm') loadTeachers()
+  if (activeTab.value === 'pm') loadParents()
 }
 
 function scopeLabel(t) {
@@ -242,6 +267,21 @@ function schoolClasses(schoolId) {
 
 async function loadTeachers() {
   teacherRows.value = await authApi.teachers()
+}
+
+async function loadParents() {
+  parentsLoading.value = true
+  try {
+    parentRows.value = (await authApi.parents()) || []
+  } finally {
+    parentsLoading.value = false
+  }
+}
+
+async function resetPwd(row) {
+  await ElMessageBox.confirm(`确认将家长「${row.username}」的密码重置为默认密码（该生身份证后 8 位）？此操作会使其所有登录立即失效。`, '重置密码', { type: 'warning' })
+  await authApi.resetParentPassword(row.id)
+  ElMessage.success('已重置为默认密码')
 }
 
 function openTeacher() {
@@ -343,6 +383,9 @@ onMounted(async () => {
   teacherRows.value = tc || []
   if (schools.value.length) levelSchoolId.value = schools.value[0].id
   if (teachers.value.length) tcTeacherId.value = teachers.value[0].id
+  // 家长重置权限：仅 SCOPE_SCHOOL/ALL 管理员可执行（与教师管理口径一致）
+  const me = JSON.parse(localStorage.getItem('auth') || 'null')
+  isManager.value = !!me?.user?.scopeType && ['SCHOOL', 'ALL'].includes(me.user.scopeType)
 })
 </script>
 

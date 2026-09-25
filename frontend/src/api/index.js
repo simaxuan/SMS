@@ -66,6 +66,12 @@ export const authApi = {
   teachers: () => http.get('/auth/teachers'),
   createTeacher: (data) => http.post('/auth/teachers', data),
   removeTeacher: (id) => http.delete(`/auth/teachers/${id}`),
+  // 修改本人密码（家长/老师）
+  changePassword: (newPassword) => http.put('/auth/password', { newPassword }),
+  // 老师端：列出家长账号（重置家长密码选人）
+  parents: () => http.get('/auth/parents'),
+  // 老师端：将家长账号重置为默认密码（=该生身份证后8位）
+  resetParentPassword: (parentAccountId) => http.put(`/auth/password/reset/${parentAccountId}`),
   // 三遗留处理：全局超管切换登录校；schoolId 为 null 表示"全部学校总览"
   switchSchool: (schoolId) => http.post('/auth/switch-school', { schoolId })
 }
@@ -93,6 +99,10 @@ export const teacherClassApi = {
 
 export const parentApi = {
   bind: (data) => http.post('/parent/bind', data),
+  // A5：家长自建未入学自测学生（origin=self）
+  createSelf: (data) => http.post('/parent/students', data),
+  // A5：认领合并（自建→校园，四要素命中后迁移自测成绩）
+  claim: (data) => http.post('/parent/claim', data),
   binds: () => http.get('/parent/binds'),
   unbind: (studentId) => http.delete(`/parent/binds/${studentId}`),
   preference: () => http.get('/parent/preference'),

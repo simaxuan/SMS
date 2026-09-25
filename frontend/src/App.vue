@@ -53,6 +53,7 @@
             <el-option v-for="s in schools" :key="s.id" :label="s.name" :value="s.id" />
           </el-select>
           <span class="nickname">{{ nickname }}</span>
+          <el-button size="small" @click="openPwdDialog">修改密码</el-button>
           <el-button size="small" @click="handleLogout">退出登录</el-button>
         </div>
       </el-header>
@@ -61,6 +62,24 @@
       </el-main>
     </el-container>
   </el-container>
+
+  <!-- 修改密码对话框（家长/老师通用） -->
+  <el-dialog v-model="pwdDialogVisible" title="修改密码" width="420px" @closed="resetPwdForm">
+    <el-form label-width="100px" @submit.prevent>
+      <el-form-item label="新密码">
+        <el-input v-model="pwdForm.newPassword" type="password" show-password placeholder="6-64 位"
+                  autocomplete="new-password" />
+      </el-form-item>
+      <el-form-item label="确认密码">
+        <el-input v-model="pwdForm.confirm" type="password" show-password placeholder="再次输入新密码"
+                  autocomplete="new-password" @keyup.enter="submitPwd" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="pwdDialogVisible = false">取消</el-button>
+      <el-button type="primary" :loading="pwdSubmitting" @click="submitPwd">确认修改</el-button>
+    </template>
+  </el-dialog>
   </el-config-provider>
 </template>
 
@@ -76,6 +95,36 @@ import { Odometer, User, EditPen, Search, TrendCharts, DataLine, Notebook, Setti
 
 const router = useRouter()
 const { isTeacher, nickname, logout, auth, setSession } = useAuth()
+
+// 修改密码
+const pwdDialogVisible = ref(false)
+const pwdSubmitting = ref(false)
+const pwdForm = ref({ newPassword: '', confirm: '' })
+function openPwdDialog() {
+  pwdForm.value = { newPassword: '', confirm: '' }
+  pwdDialogVisible.value = true
+}
+function resetPwdForm() {
+  pwdForm.value = { newPassword: '', confirm: '' }
+}
+async function submitPwd() {
+  const np = pwdForm.value.newPassword
+  if (!np || np.length < 6) { ElMessage.warning('新密码至少 6 位'); return }
+  if (np !== pwdForm.value.confirm) { ElMessage.warning('两次输入的密码不一致'); return }
+  pwdSubmitting.value = true
+  try {
+    await authApi.changePassword(np)
+    ElMessage.success('密码已修改，请用新密码重新登录')
+    pwdDialogVisible.value = false
+    // 改密后后端已使旧令牌失效：跳回登录页
+    logout()
+    router.push('/login')
+  } catch (e) {
+    // 错误已提示
+  } finally {
+    pwdSubmitting.value = false
+  }
+}
 
 // 侧边栏折叠：桌面默认展开，窄屏（≤768px）自动折叠，避免挤压主内容区
 const collapsed = ref(false)

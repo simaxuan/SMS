@@ -2,7 +2,7 @@
   <div>
     <el-card shadow="never" class="welcome">
       <h2>你好，{{ nickname }}</h2>
-      <p class="desc">这里是「个人版·家长端」。您可以绑定孩子，查看孩子的在校成绩趋势，并录入在家的小测成绩。</p>
+      <p class="desc">这里是「个人版·家长端」。您可以绑定/自建孩子，查看孩子的成绩趋势，并录入在家的小测成绩。</p>
       <p class="note">说明：老师录入的校内成绩为只读；家长录入的小测成绩仅自己可见，不会进入班级统计，老师端也不查看。</p>
     </el-card>
 
@@ -11,7 +11,7 @@
         <el-card shadow="never" class="stat-card" @click="$router.push('/parent/bind')">
           <div class="num">{{ binds.length }}</div>
           <div class="label">已绑定孩子</div>
-          <el-button type="primary" link>去绑定 / 管理</el-button>
+          <el-button type="primary" link>去绑定 / 自建 / 管理</el-button>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="8">
@@ -43,7 +43,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-empty v-if="!loading && binds.length === 0" description="尚未绑定孩子，请先到「孩子绑定」添加" />
+      <el-empty v-if="!loading && binds.length === 0" description="尚未绑定孩子，可到「孩子绑定」中绑定在校学生、自建孩子，或进行认领合并" />
     </el-card>
   </div>
 </template>

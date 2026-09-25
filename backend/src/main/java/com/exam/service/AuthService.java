@@ -285,6 +285,24 @@ public class AuthService {
     }
 
     /**
+     * 列出家长账号（老师端：重置家长密码 / 家长管理用）。
+     * <p>多租户：仅返回当前登录者归属校的家长；SCOPE_ALL（全局超管）放开全校。
+     * 隐私：仅 SCOPE_SCHOOL/ALL 管理者可见他人手机号（与 listTeachers 口径一致）。
+     */
+    public java.util.List<Map<String, Object>> listParents() {
+        Account viewer = LoginUserContext.requireLogin();
+        Long sid = Account.SCOPE_ALL.equals(viewer.getScopeType()) ? null : viewer.getSchoolId();
+        java.util.List<Account> list = sid == null
+                ? accountRepository.findByRole(Account.ROLE_PARENT)
+                : accountRepository.findByRoleAndSchoolId(Account.ROLE_PARENT, sid);
+        boolean isManager = Account.SCOPE_ALL.equals(viewer.getScopeType())
+                || Account.SCOPE_SCHOOL.equals(viewer.getScopeType());
+        return list.stream()
+                .map(a -> toView(a, isManager))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 创建教师账号（多租户：强制归属学校；CLASS 范围须绑定本校班级）。
      * 仅 SCOPE_SCHOOL/ALL 老师或 admin 可调用（由 Controller 校验）。
      */

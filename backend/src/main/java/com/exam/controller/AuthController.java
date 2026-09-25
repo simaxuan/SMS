@@ -107,6 +107,13 @@ public class AuthController {
         return R.ok(authService.listTeachers());
     }
 
+    /** 老师端：列出家长账号（组织管理-家长管理/重置家长密码选人；按校隔离 + 手机号隐私）。 */
+    @GetMapping("/parents")
+    public R<java.util.List<Map<String, Object>>> parents() {
+        LoginUserContext.requireRole(Account.ROLE_TEACHER);
+        return R.ok(authService.listParents());
+    }
+
     /** 教师管理：创建教师账号（仅 SCOPE_SCHOOL/ALL 老师或 admin）。 */
     @PostMapping("/teachers")
     public R<Map<String, Object>> createTeacher(@Valid @RequestBody CreateTeacherRequest req) {
